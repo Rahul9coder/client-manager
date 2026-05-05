@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white selection:bg-blue-100">
       
-      {/* 1. Top Navigation Bar */}
+      {/* Navigation Bar */}
       <nav className="border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <span className="text-xl font-black text-gray-900 tracking-tight">
@@ -20,7 +20,7 @@ export default function Home() {
       </nav>
 
       <main>
-        {/* 2. Hero Section with Gradient */}
+        {/* Hero Section with gradient background and call to action */}
         <div className="relative isolate px-6 pt-14 lg:px-8 bg-gradient-to-b from-blue-50/50 to-white">
           <div className="mx-auto max-w-3xl py-16 sm:py-24 text-center">
             
@@ -54,11 +54,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* 3. Feature Cards Grid */}
         <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
             
-            {/* Feature 1 */}
             <div className="p-8 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all duration-200">
               <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-6 text-2xl shadow-inner">
                 📝
@@ -69,7 +67,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Feature 2 */}
             <div className="p-8 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all duration-200">
               <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mb-6 text-2xl shadow-inner">
                 🗂️
@@ -80,7 +77,6 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Feature 3 */}
             <div className="p-8 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all duration-200">
               <div className="w-12 h-12 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center mb-6 text-2xl shadow-inner">
                 ⚡
@@ -95,7 +91,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Simple Footer */}
       <footer className="border-t border-gray-100 py-8 text-center text-sm text-gray-500">
         <p>© {new Date().getFullYear()} ClientManager. Built with Next.js & Supabase.</p>
       </footer>

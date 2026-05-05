@@ -7,22 +7,22 @@ import { createClient } from '@/utils/supabase/server';
 export async function login(formData: FormData) {
   const supabase = await createClient();
 
-  // Grab the values from your input fields
+  // collect values from input fields
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
-  // Send them to Supabase securely
+  // Send to Supabase securely
   const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
   if (error) {
-    // If they type the wrong password, send them back to the login page
+    // If type the wrong password send back to login page
     return redirect('/login?message=Could not authenticate user');
   }
 
-  // If successful, clear the cache and send them to their workspace!
+  // If successful clear the cache and send to workspace
   revalidatePath('/', 'layout');
   redirect('/dashboard');
 }

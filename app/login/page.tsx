@@ -5,7 +5,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 sm:px-6">
       
-      {/* Background ambient glow effect (Optional but looks highly professional) */}
+      {/* Background ambient glow effect*/}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none"></div>
 
       <div className="w-full max-w-md relative z-10">
@@ -19,7 +19,7 @@ export default function LoginPage() {
           <p className="text-sm text-gray-400 mt-2">Sign in to your workspace</p>
         </div>
 
-        {/* Upgraded Form Card */}
+        {/*Form Card */}
         <div className="bg-[#111111] p-8 rounded-2xl border border-gray-800 shadow-2xl">
           <form className="space-y-6">
             

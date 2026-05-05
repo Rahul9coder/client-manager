@@ -1,6 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { notFound } from 'next/navigation';
-import Link from 'next/link'; // <-- 1. Added Link import
+import Link from 'next/link'; 
 
 export default async function ClientSummary(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -22,7 +22,6 @@ export default async function ClientSummary(props: { params: Promise<{ id: strin
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-xl border border-gray-100 mt-8">
       
-      {/* 2. Added the Back Button right here! */}
       <div className="mb-6">
         <Link 
           href="/dashboard" 

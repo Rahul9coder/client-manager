@@ -11,14 +11,13 @@ export default async function DashboardPage() {
     return redirect('/login');
   }
 
-  // Fetch clients sorted by newest first
+  // Fetch clients
   const { data: clients } = await supabase
     .from('clients')
     .select('*')
     .eq('user_id', user.id)
-    //.order('created_at', { ascending: false });
 
-  // Server Action: Delete Client
+  // Delete Client
   async function deleteClient(formData: FormData) {
     'use server';
     const supabase = await createClient();
@@ -27,7 +26,7 @@ export default async function DashboardPage() {
     revalidatePath('/dashboard');
   }
 
-  // Server Action: Sign Out
+  // Sign Out
   async function signOut() {
     'use server';
     const supabase = await createClient();
@@ -35,7 +34,6 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
-  // Helper function for beautiful status badges
   const getBadgeStyle = (status: string) => {
     switch (status) {
       case 'Active': return 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20';
@@ -47,7 +45,7 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50/50">
       
-      {/* 1. Global Top Navigation */}
+      {/* Navigation */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="text-xl font-black text-gray-900 tracking-tight hover:opacity-80 transition-opacity">
@@ -69,7 +67,6 @@ export default async function DashboardPage() {
         </div>
       </nav>
 
-      {/* Main Workspace */}
       <main className="max-w-6xl mx-auto p-6 mt-8">
         
         {/* Workspace Header */}
@@ -95,7 +92,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* 2. Beautiful Empty State */}
+        {/* Empty State */}
         {(!clients || clients.length === 0) ? (
           <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-200 border-dashed">
             <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
@@ -115,7 +112,7 @@ export default async function DashboardPage() {
         ) : (
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* 3. Upgraded Client Cards Grid (Comment moved safely inside the div!) */}
+            {/* Client Cards Grid */}
             {clients.map((client) => (
               <div 
                 key={client.id} 

@@ -39,7 +39,7 @@ export default async function NewClientPage() {
           <p className="text-gray-500 mt-2">Enter the project details below to generate a new workspace document.</p>
         </div>
 
-        {/* Upgraded Form Card */}
+        {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
           <form action={addClient} className="p-8 sm:p-10 space-y-8">
             

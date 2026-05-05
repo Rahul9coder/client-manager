@@ -11,14 +11,14 @@ export default async function TemplatePage() {
     return redirect('/login');
   }
 
-  // Fetch the user's existing template (if they have one)
+  // Fetch the user's existing template
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single();
 
-  // Server Action to save the template
+  //  save template
   async function saveTemplate(formData: FormData) {
     'use server';
     const supabase = await createClient();
@@ -26,8 +26,6 @@ export default async function TemplatePage() {
 
     if (!user) return;
 
-    // "upsert" means: Update it if it exists, Insert it if it doesn't.
-    // Because we use the user.id as the primary key, it guarantees ONE template per user.
     await supabase.from('profiles').upsert({
       id: user.id,
       specialization: formData.get('specialization'),
@@ -56,7 +54,7 @@ export default async function TemplatePage() {
       </p>
 
       <form action={saveTemplate} className="space-y-6">
-        {/* Field 1: Specialization (Text) */}
+        {/* Specialization */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Specialization
@@ -71,7 +69,7 @@ export default async function TemplatePage() {
           />
         </div>
 
-        {/* Field 2: Work Style (Dropdown) */}
+        {/* Dropdown */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Work Style
@@ -87,7 +85,7 @@ export default async function TemplatePage() {
           </select>
         </div>
 
-        {/* Field 3: Default Sections (Comma-separated text) */}
+        {/*  Default Sections */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Default Sections (Comma-separated)
