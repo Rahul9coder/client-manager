@@ -1,23 +1,24 @@
 import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation'; // <-- 1. Added redirect import
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // If the user isn't logged in, send them back to the login page safely
   if (!user) {
     return redirect('/login');
   }
 
+  // Fetch clients sorted by newest first
   const { data: clients } = await supabase
     .from('clients')
     .select('*')
-    .eq('user_id', user.id);
+    .eq('user_id', user.id)
+    //.order('created_at', { ascending: false });
 
-  // Server Action to delete a client
+  // Server Action: Delete Client
   async function deleteClient(formData: FormData) {
     'use server';
     const supabase = await createClient();
@@ -26,7 +27,7 @@ export default async function DashboardPage() {
     revalidatePath('/dashboard');
   }
 
-  // 2. Server Action to Log Out
+  // Server Action: Sign Out
   async function signOut() {
     'use server';
     const supabase = await createClient();
@@ -34,87 +35,127 @@ export default async function DashboardPage() {
     redirect('/login');
   }
 
+  // Helper function for beautiful status badges
+  const getBadgeStyle = (status: string) => {
+    switch (status) {
+      case 'Active': return 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20';
+      case 'Completed': return 'bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-600/20';
+      default: return 'bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20';
+    }
+  };
+
   return (
-    <div className="max-w-5xl mx-auto p-6 mt-8">
+    <div className="min-h-screen bg-gray-50/50">
       
-      <div className="mb-4">
-        <Link 
-          href="/" 
-          className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors inline-flex items-center"
-        >
-          &larr; Back to Home
-        </Link>
-      </div>
+      {/* 1. Global Top Navigation */}
+      <nav className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+          <Link href="/" className="text-xl font-black text-gray-900 tracking-tight hover:opacity-80 transition-opacity">
+            Client<span className="text-blue-600">Manager</span>
+          </Link>
+          <div className="flex items-center gap-6">
+            <span className="text-sm font-medium text-gray-500 hidden sm:block">
+              {user.email}
+            </span>
+            <form action={signOut}>
+              <button 
+                type="submit" 
+                className="text-sm font-semibold text-gray-500 hover:text-red-600 transition-colors"
+              >
+                Log Out &rarr;
+              </button>
+            </form>
+          </div>
+        </div>
+      </nav>
 
-      {/* 3. Updated Header Area with Log Out Button */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <h1 className="text-3xl font-bold text-gray-900">My Clients</h1>
-        <div className="flex flex-wrap gap-3">
-          <Link 
-            href="/dashboard/template" 
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-          >
-            Edit Template
-          </Link>
-          <Link 
-            href="/dashboard/clients/new" 
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-          >
-            + Add Client
-          </Link>
-          <form action={signOut}>
-            <button 
-              type="submit" 
-              className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-100 rounded-md hover:bg-red-100 transition-colors"
+      {/* Main Workspace */}
+      <main className="max-w-6xl mx-auto p-6 mt-8">
+        
+        {/* Workspace Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Your Workspace</h1>
+            <p className="text-sm text-gray-500 mt-1">Manage your clients and generate professional summaries.</p>
+          </div>
+          
+          <div className="flex gap-3 w-full sm:w-auto">
+            <Link 
+              href="/dashboard/template" 
+              className="flex-1 sm:flex-none justify-center inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-all shadow-sm"
             >
-              Log Out
-            </button>
-          </form>
+              ⚙️ Settings
+            </Link>
+            <Link 
+              href="/dashboard/clients/new" 
+              className="flex-1 sm:flex-none justify-center inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all shadow-sm shadow-blue-600/20"
+            >
+              + New Client
+            </Link>
+          </div>
         </div>
-      </div>
 
-      {(!clients || clients.length === 0) ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow border border-gray-100">
-          <p className="text-gray-500 mb-4">You haven't added any clients yet.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {clients.map((client) => (
-            <div key={client.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex flex-col">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">{client.name}</h2>
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                  client.status === 'Active' ? 'bg-green-100 text-green-800' : 
-                  client.status === 'Completed' ? 'bg-gray-100 text-gray-800' : 
-                  'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {client.status}
-                </span>
-              </div>
-              
-              <p className="text-sm text-gray-600 line-clamp-3 mb-6 flex-1">
-                {client.project_summary || 'No summary provided.'}
-              </p>
-
-              <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                <Link 
-                  href={`/dashboard/clients/${client.id}`} 
-                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                >
-                  View Summary &rarr;
-                </Link>
-                
-                <form action={deleteClient}>
-                  <input type="hidden" name="client_id" value={client.id} />
-                  <button type="submit" className="text-red-500 hover:text-red-700 text-sm font-medium">
-                    Delete
-                  </button>
-                </form>
-              </div>
+        {/* 2. Beautiful Empty State */}
+        {(!clients || clients.length === 0) ? (
+          <div className="text-center py-20 bg-white rounded-2xl shadow-sm border border-gray-200 border-dashed">
+            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
+              📂
             </div>
-          ))}
-        </div>
-      )}
+            <h3 className="text-lg font-bold text-gray-900 mb-2">No clients yet</h3>
+            <p className="text-gray-500 max-w-sm mx-auto mb-6 text-sm">
+              Get started by creating your first client profile. You can generate a summary document immediately after!
+            </p>
+            <Link 
+              href="/dashboard/clients/new" 
+              className="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all shadow-sm"
+            >
+              Add Your First Client
+            </Link>
+          </div>
+        ) : (
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* 3. Upgraded Client Cards Grid (Comment moved safely inside the div!) */}
+            {clients.map((client) => (
+              <div 
+                key={client.id} 
+                className="group bg-white p-6 rounded-2xl shadow-sm border border-gray-200 hover:shadow-md hover:border-blue-200 transition-all duration-200 flex flex-col transform hover:-translate-y-1"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <h2 className="text-xl font-bold text-gray-900 tracking-tight">{client.name}</h2>
+                  <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${getBadgeStyle(client.status)}`}>
+                    {client.status}
+                  </span>
+                </div>
+                
+                <p className="text-sm text-gray-600 line-clamp-3 mb-8 flex-1 leading-relaxed">
+                  {client.project_summary || 'No project summary provided yet.'}
+                </p>
+
+                <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-auto">
+                  <Link 
+                    href={`/dashboard/clients/${client.id}`} 
+                    className="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors group-hover:underline"
+                  >
+                    View Document &rarr;
+                  </Link>
+                  
+                  <form action={deleteClient}>
+                    <input type="hidden" name="client_id" value={client.id} />
+                    <button 
+                      type="submit" 
+                      className="text-sm font-medium text-gray-400 hover:text-red-600 transition-colors"
+                      title="Delete Client"
+                    >
+                      Delete
+                    </button>
+                  </form>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
     </div>
   );
 }

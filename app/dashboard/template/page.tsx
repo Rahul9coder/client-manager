@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { SubmitButton } from '@/components/SubmitButton';
 
 export default async function TemplatePage() {
   const supabase = await createClient();
@@ -104,12 +105,8 @@ export default async function TemplatePage() {
           </p>
         </div>
 
-        <button 
-          type="submit" 
-          className="w-full bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 transition-colors font-medium mt-4 shadow-sm"
-        >
+        <SubmitButton defaultText="Save Template" loadingText="Saving..."/> 
           Save Template
-        </button>
       </form>
     </div>
   );
