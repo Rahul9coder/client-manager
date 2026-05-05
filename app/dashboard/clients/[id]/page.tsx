@@ -1,8 +1,10 @@
 import { createClient } from '@/utils/supabase/server';
 import { notFound } from 'next/navigation';
+import Link from 'next/link'; // <-- 1. Added Link import
 
-export default async function ClientSummary({ params }: { params: { id: string } }) {
-  // Added 'await' here
+export default async function ClientSummary(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
+  
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -19,19 +21,30 @@ export default async function ClientSummary({ params }: { params: { id: string }
 
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-xl border border-gray-100 mt-8">
+      
+      {/* 2. Added the Back Button right here! */}
+      <div className="mb-6">
+        <Link 
+          href="/dashboard" 
+          className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors inline-flex items-center"
+        >
+          &larr; Back to Dashboard
+        </Link>
+      </div>
+
       <header className="border-b pb-6 mb-6">
         <h1 className="text-4xl font-extrabold text-gray-900">{client.name}</h1>
         <div className="mt-3 flex gap-4 text-sm text-gray-500">
-          <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">
+          <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium border border-blue-200">
             Status: {client.status}
           </span>
           {profile?.specialization && (
-            <span className="bg-gray-100 px-3 py-1 rounded-full">
+            <span className="bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
               Specialization: {profile.specialization}
             </span>
           )}
           {profile?.work_style && (
-            <span className="bg-gray-100 px-3 py-1 rounded-full">
+            <span className="bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
               Style: {profile.work_style}
             </span>
           )}
@@ -48,9 +61,9 @@ export default async function ClientSummary({ params }: { params: { id: string }
           }
 
           return (
-            <section key={index} className="bg-gray-50 p-6 rounded-lg border border-gray-100">
-              <h2 className="text-xl font-semibold mb-3 border-b pb-2">{section}</h2>
-              <p className="whitespace-pre-wrap">{content}</p>
+            <section key={index} className="bg-gray-50 p-6 rounded-lg border border-gray-200 shadow-sm">
+              <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2 text-gray-900">{section}</h2>
+              <p className="whitespace-pre-wrap leading-relaxed">{content}</p>
             </section>
           );
         })}

@@ -1,57 +1,84 @@
 import { createClient } from '@/utils/supabase/server';
-import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 export default async function TemplatePage() {
-  // Added 'await' here
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
-  // Fetch the user's current template settings from the database
+
+  if (!user) {
+    return redirect('/login');
+  }
+
+  // Fetch the user's existing template (if they have one)
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', user?.id)
+    .eq('id', user.id)
     .single();
 
-  // Next.js Server Action to save the updated template
-  async function updateTemplate(formData: FormData) {
+  // Server Action to save the template
+  async function saveTemplate(formData: FormData) {
     'use server';
-    // Added 'await' here as well
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
+    if (!user) return;
+
+    // "upsert" means: Update it if it exists, Insert it if it doesn't.
+    // Because we use the user.id as the primary key, it guarantees ONE template per user.
     await supabase.from('profiles').upsert({
-      id: user?.id,
+      id: user.id,
       specialization: formData.get('specialization'),
       work_style: formData.get('work_style'),
       default_sections: formData.get('default_sections'),
     });
-    
-    revalidatePath('/dashboard/template');
+
+    // Send them back to the dashboard after saving
+    redirect('/dashboard');
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow mt-10">
-      <h1 className="text-2xl font-bold mb-6 text-gray-900">My Profile Template</h1>
-      <form action={updateTemplate} className="space-y-6">
-        
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow mt-10 border border-gray-100">
+      <div className="mb-6 flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">Your Client Template</h1>
+        <Link 
+          href="/dashboard" 
+          className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+        >
+          Cancel
+        </Link>
+      </div>
+
+      <p className="text-gray-600 mb-8">
+        Customize how your client summaries will be generated. These settings will be applied to every client you add.
+      </p>
+
+      <form action={saveTemplate} className="space-y-6">
+        {/* Field 1: Specialization (Text) */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Specialization</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Specialization
+          </label>
           <input 
             type="text" 
             name="specialization" 
-            defaultValue={profile?.specialization || ''} 
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900" 
-            required 
+            defaultValue={profile?.specialization || ''}
+            placeholder="e.g. Web Development, Graphic Design, Consulting"
+            className="w-full border border-gray-300 rounded-md p-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+            required
           />
         </div>
-        
+
+        {/* Field 2: Work Style (Dropdown) */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Work Style</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Work Style
+          </label>
           <select 
             name="work_style" 
-            defaultValue={profile?.work_style || 'Hybrid'} 
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900"
+            defaultValue={profile?.work_style || 'Hybrid'}
+            className="w-full border border-gray-300 rounded-md p-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
           >
             <option value="Remote">Remote</option>
             <option value="Hybrid">Hybrid</option>
@@ -59,21 +86,27 @@ export default async function TemplatePage() {
           </select>
         </div>
 
+        {/* Field 3: Default Sections (Comma-separated text) */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Default Sections (Comma separated)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Default Sections (Comma-separated)
+          </label>
           <input 
             type="text" 
             name="default_sections" 
-            defaultValue={profile?.default_sections || 'Overview, Goals, Notes'} 
-            placeholder="e.g. Overview, Goals, Notes" 
-            className="mt-1 block w-full border border-gray-300 rounded-md p-2 text-gray-900" 
+            defaultValue={profile?.default_sections || 'Overview, Goals, Notes'}
+            placeholder="e.g. Overview, Goals, Notes"
+            className="w-full border border-gray-300 rounded-md p-2 text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none" 
+            required
           />
-          <p className="text-xs text-gray-500 mt-1">These will become the headers on your client summaries.</p>
+          <p className="text-xs text-gray-500 mt-2">
+            These sections will automatically be generated for every new client document.
+          </p>
         </div>
 
         <button 
           type="submit" 
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors w-full sm:w-auto"
+          className="w-full bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 transition-colors font-medium mt-4 shadow-sm"
         >
           Save Template
         </button>

@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 export default async function LoginPage(props: {
   searchParams: Promise<{ message: string }>;
 }) {
-  // Await the searchParams for Next.js 15
   const searchParams = await props.searchParams;
   
   // Server Action for Logging In
@@ -20,10 +19,12 @@ export default async function LoginPage(props: {
     });
 
     if (error) {
-      return redirect('/login?message=Could not authenticate user');
+      console.log("SUPABASE SIGN IN ERROR:", error.message); 
+      return redirect(`/login?message=${error.message}`); 
     }
 
-    return redirect('/dashboard/template');
+    // Redirect straight to the main dashboard
+    return redirect('/dashboard');
   };
 
   // Server Action for Signing Up
@@ -39,10 +40,12 @@ export default async function LoginPage(props: {
     });
 
     if (error) {
-      return redirect('/login?message=Could not sign up user');
+      console.log("SUPABASE ERROR:", error.message); 
+      return redirect(`/login?message=${error.message}`); 
     }
 
-    return redirect('/dashboard/template');
+    // Redirect straight to the main dashboard
+    return redirect('/dashboard');
   };
 
   return (
@@ -54,7 +57,7 @@ export default async function LoginPage(props: {
           Email
         </label>
         <input
-          className="rounded-md px-4 py-2 bg-inherit border border-gray-300 mb-6"
+          className="rounded-md px-4 py-2 bg-white text-gray-900 border border-gray-300 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
           name="email"
           placeholder="you@example.com"
           required
@@ -64,7 +67,7 @@ export default async function LoginPage(props: {
           Password
         </label>
         <input
-          className="rounded-md px-4 py-2 bg-inherit border border-gray-300 mb-6"
+          className="rounded-md px-4 py-2 bg-white text-gray-900 border border-gray-300 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
           type="password"
           name="password"
           placeholder="••••••••"
