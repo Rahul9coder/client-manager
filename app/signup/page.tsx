@@ -1,7 +1,7 @@
-import { login } from './actions';
+import { signup } from './actions';
 import Link from 'next/link';
 
-export default async function LoginPage({ 
+export default async function SignupPage({ 
   searchParams 
 }: { 
   searchParams: Promise<{ message?: string; type?: string }> 
@@ -13,6 +13,7 @@ export default async function LoginPage({
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 sm:px-6 relative">
       
+      {/* 🌟 NEW: Floating Back Button 🌟 */}
       <Link 
         href="/" 
         className="absolute top-6 left-6 sm:top-10 sm:left-10 text-gray-500 hover:text-white flex items-center gap-2 transition-colors group z-20"
@@ -24,19 +25,19 @@ export default async function LoginPage({
       </Link>
 
       {/* Background ambient glow effect */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none"></div>
 
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block text-2xl font-black text-white tracking-tight hover:opacity-80 transition-opacity mb-2">
             Client<span className="text-blue-500">Manager</span>
           </Link>
-          <h1 className="text-2xl font-semibold text-white mt-4">Welcome Back</h1>
-          <p className="text-sm text-gray-400 mt-2">Sign in to your workspace</p>
+          <h1 className="text-2xl font-semibold text-white mt-4">Create an Account</h1>
+          <p className="text-sm text-gray-400 mt-2">Start managing your clients today.</p>
         </div>
 
         <div className="bg-[#111111] p-8 rounded-2xl border border-gray-800 shadow-2xl">
-          <form action={login} className="space-y-6">
+          <form action={signup} className="space-y-6">
             
             {message && (
               <div className={`p-4 rounded-xl text-sm font-medium border ${
@@ -52,30 +53,30 @@ export default async function LoginPage({
               <label className="block text-sm font-medium text-gray-300 mb-2" htmlFor="email">Email</label>
               <input
                 id="email" name="email" type="email" required placeholder="you@example.com"
-                className="w-full px-4 py-3.5 bg-black border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                className="w-full px-4 py-3.5 bg-black border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2" htmlFor="password">Password</label>
               <input
-                id="password" name="password" type="password" required placeholder="••••••••"
-                className="w-full px-4 py-3.5 bg-black border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                id="password" name="password" type="password" required placeholder="••••••••" minLength={6}
+                className="w-full px-4 py-3.5 bg-black border border-gray-800 rounded-xl text-white placeholder-gray-600 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
               />
             </div>
 
             <div className="pt-2">
               <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-blue-900/20 active:scale-[0.98]">
-                Sign In
+                Sign Up
               </button>
             </div>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-400">
-              Don't have an account?{' '}
-              <Link href="/signup" className="text-blue-500 hover:text-blue-400 font-medium transition-colors">
-                Sign Up
+              Already have an account?{' '}
+              <Link href="/login" className="text-blue-500 hover:text-blue-400 font-medium transition-colors">
+                Sign In
               </Link>
             </p>
           </div>

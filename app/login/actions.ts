@@ -39,8 +39,9 @@ export async function signup(formData: FormData) {
   });
 
   if (error) {
-    return redirect('/login?message=Could not create user');
+    return redirect('/login?message=Could not create user. Try again.&type=error');
   }
+  //return redirect('/login?message=Success! Please Sign In Now.&type=success');
 
   revalidatePath('/', 'layout');
   redirect('/dashboard');
