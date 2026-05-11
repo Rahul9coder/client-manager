@@ -1,5 +1,6 @@
 import { signup } from './actions';
 import Link from 'next/link';
+import { SubmitButton } from '@/components/submit-button';
 
 export default async function SignupPage({ 
   searchParams 
@@ -13,7 +14,6 @@ export default async function SignupPage({
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 sm:px-6 relative">
       
-      {/* 🌟 NEW: Floating Back Button 🌟 */}
       <Link 
         href="/" 
         className="absolute top-6 left-6 sm:top-10 sm:left-10 text-gray-500 hover:text-white flex items-center gap-2 transition-colors group z-20"
@@ -66,9 +66,9 @@ export default async function SignupPage({
             </div>
 
             <div className="pt-2">
-              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3.5 px-4 rounded-xl transition-all shadow-lg shadow-blue-900/20 active:scale-[0.98]">
+              <SubmitButton loadingText="Creating account...">
                 Sign Up
-              </button>
+              </SubmitButton>
             </div>
           </form>
 
